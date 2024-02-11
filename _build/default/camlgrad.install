@@ -1,0 +1,8 @@
+lib: [
+  "_build/install/default/lib/camlgrad/META"
+  "_build/install/default/lib/camlgrad/dune-package"
+  "_build/install/default/lib/camlgrad/opam"
+]
+bin: [
+  "_build/install/default/bin/camlgrad"
+]

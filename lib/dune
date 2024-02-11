@@ -1,0 +1,4 @@
+(library
+ (name camlgrad)
+ (libraries ctypes-foreign)
+ (flags :standard -cclib -lcblas))
