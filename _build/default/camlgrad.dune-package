@@ -1,4 +1,4 @@
 (lang dune 3.11)
 (name camlgrad)
-(sections (lib .) (bin ../../bin))
-(files (lib (META dune-package opam)) (bin (camlgrad)))
+(sections (lib .) (bin ../../bin) (doc ../../doc/camlgrad))
+(files (lib (META dune-package opam)) (bin (camlgrad)) (doc (README.md)))

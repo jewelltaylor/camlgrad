@@ -6,3 +6,6 @@ lib: [
 bin: [
   "_build/install/default/bin/camlgrad"
 ]
+doc: [
+  "_build/install/default/doc/camlgrad/README.md"
+]
