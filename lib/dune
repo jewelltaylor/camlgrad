@@ -1,4 +1,10 @@
 (library
  (name camlgrad)
  (libraries ctypes-foreign)
- (flags :standard -cclib -lcblas))
+ (flags (:standard -cclib -lcblas)
+        (:standard
+         -ccopt -framework
+         -ccopt Accelerate
+         -ccopt -Xpreprocessor
+         -ccopt -fno-common))
+ )
