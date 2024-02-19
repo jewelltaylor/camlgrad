@@ -25,4 +25,8 @@ let range start stop =
       (range 0 (Array2.dim1 a2D))
     end
     | _ -> raise TypeException
- 
+
+  let print a = 
+    match a with 
+    | T1D _ -> print1D a
+    | T2D _ -> print2D a 
