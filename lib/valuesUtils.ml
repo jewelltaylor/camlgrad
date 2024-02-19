@@ -24,3 +24,9 @@ open Utils
     match a with 
     | V1D _ -> print1D a
     | V2D _ -> print2D a 
+
+let dims a = 
+  match a with 
+  | V1D a1D -> D1D (Array1.dim a1D)
+  | V2D a2D -> D2D (Array2.dim1 a2D, Array2.dim2 a2D)
+
