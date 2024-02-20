@@ -16,13 +16,21 @@ type dimensions =
   | D1D of int
   | D2D of int * int
 
-type operator = ADD | SUB | MUL | DIV | MATMUL | MATVECMUL | NEG | EXP | LOG | SQRT | POW2 | CREATE
-
 type tensor = {
   tid : int;
   vals : values;
   mutable grad : values;
   op : operator;
-  children : tensor array
-}
-
+} and operator = 
+  | ADD of tensor * tensor 
+  | SUB of tensor * tensor 
+  | MUL of tensor * tensor 
+  | DIV of tensor * tensor
+  | MATMUL of tensor * tensor
+  | MATVECMUL of tensor * tensor 
+  | NEG of tensor 
+  | EXP of tensor 
+  | LOG of tensor 
+  | SQRT of tensor
+  | POW2 of tensor 
+  | CREATE
