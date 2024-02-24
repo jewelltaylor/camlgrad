@@ -35,32 +35,46 @@ let exp a = unary_op vvexpf a
 let sqrt a = unary_op vvsqrtf a
 let reciprocal a = unary_op vvrecf a
 
-let pow2V1D a = 
-  match a with 
-  | (V1D a1D) -> begin
-    let dim = Array1.dim a1D in 
-    let y1D = Array1.create Float32 c_layout dim in 
-    let x1D = Array1.init Float32 c_layout dim (fun _ -> 2.0) in 
-    vvpowf (bigarray_start array1 y1D) (bigarray_start array1 x1D) (bigarray_start array1 a1D) (allocate int dim);
+let vforce_elementwise_binary_op1D f a b = 
+  match (a, b) with
+  | (V1D a1D, V1D b1D) -> begin
+    if Array1.dim a1D <> Array1.dim b1D then raise SizeException;
+    let dim = Array1.dim a1D in
+    let y1D = Array1.create Float32 c_layout dim in  
+    f (bigarray_start array1 y1D) (bigarray_start array1 a1D) (bigarray_start array1 b1D) (allocate int dim);
     V1D y1D
   end
   | _ -> raise TypeException
 
-let pow2V2D a = 
-  match a with 
-  | (V2D a2D) -> begin
+let vforce_elementwise_binary_op2D f a b = 
+  match (a, b) with
+  | (V2D a2D, V2D b2D) -> begin
+    if (Array2.dim1 a2D, Array2.dim2 a2D) <> (Array2.dim1 b2D, Array2.dim2 b2D) then raise SizeException;
     let (dim1, dim2) = (Array2.dim1 a2D, Array2.dim2 a2D) in
-    let y2D = Array2.create Float32 c_layout dim1 dim2 in 
-    let x2D = Array2.init Float32 c_layout dim1 dim2 (fun _ _ -> 2.0) in 
-    vvpowf (bigarray_start array2 y2D) (bigarray_start array2 x2D) (bigarray_start array2 a2D) (allocate int (dim1 * dim2));
+    let y2D = Array2.create Float32 c_layout dim1 dim2 in  
+    f (bigarray_start array2 y2D) (bigarray_start array2 a2D) (bigarray_start array2 b2D) (allocate int (dim1 * dim2));
     V2D y2D
   end
   | _ -> raise TypeException
 
+let vforce_elementwise_binary_op f a b =
+  match (a, b) with
+  | (V1D _, V1D _) -> vforce_elementwise_binary_op1D f a b
+  | (V2D _, V2D _) -> vforce_elementwise_binary_op2D f a b
+  | _ -> raise TypeException
+
 let pow2 a = 
   match a with
-  | V1D _ -> pow2V1D a 
-  | V2D _ -> pow2V2D a 
+  | V1D a1D -> begin
+    let dim = Array1.dim a1D in
+    let x1D = Array1.init Float32 c_layout dim (fun _ -> 2.0) in 
+    vforce_elementwise_binary_op vvpowf (V1D x1D) a 
+  end
+  | V2D a2D -> begin 
+    let (dim1, dim2) = (Array2.dim1 a2D, Array2.dim2 a2D) in
+    let x2D = Array2.init Float32 c_layout dim1 dim2 (fun _ _ -> 2.0) in
+    vforce_elementwise_binary_op vvpowf (V2D x2D) a
+  end
 
 let dotV1D a b = 
   match (a, b) with
@@ -109,33 +123,7 @@ let sum a =
   | V1D _ -> sumV1D a 
   | V2D _ -> sumV2D a 
 
-let divV1D a b = 
-  match (a, b) with 
-  | (V1D a1D, V1D b1D) -> begin 
-    if Array1.dim a1D <> Array1.dim b1D then raise SizeException;
-    let dim = Array1.dim a1D in
-    let y1D = Array1.create Float32 c_layout dim in Array1.blit b1D y1D;
-    vvdivf (bigarray_start array1 y1D) (bigarray_start array1 a1D) (bigarray_start array1 b1D) (allocate int dim); 
-    V1D y1D
-  end
-  | _ -> raise SizeException
-
-let divV2D a b = 
-  match (a, b) with 
-  | (V2D a2D, V2D b2D) -> begin 
-    if (Array2.dim1 a2D, Array2.dim2 a2D) <> (Array2.dim1 b2D, Array2.dim2 b2D) then raise SizeException;
-    let (dim1, dim2) = (Array2.dim1 a2D, Array2.dim2 a2D) in
-    let y2D = Array2.create Float32 c_layout dim1 dim2 in 
-    vvdivf (bigarray_start array2 y2D) (bigarray_start array2 a2D) (bigarray_start array2 b2D) (allocate int (dim1 * dim2)); 
-    V2D y2D
-  end
-  | _ -> raise SizeException
-
-let div a b = 
-  match (a, b) with 
-  | (V1D _, V1D _) -> divV1D a b
-  | (V2D _, V2D _) -> divV2D a b
-  | _ -> raise TypeException 
+let div a b = vforce_elementwise_binary_op vvdivf a b
 
 let mul a b =
   match (a, b) with
