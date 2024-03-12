@@ -1,3 +1,4 @@
+open Bigarray
 open Types 
 open Utils
 
@@ -77,3 +78,8 @@ let pow2 a =
   let grad = Values.zeros (Values.dims vals) in
   let op = POW2 a in
   {tid; vals; grad; op}
+
+let dim a = 
+  match a.vals with
+  | V1D a1D -> D1D (Array1.dim a1D)
+  | V2D a2D -> D2D (Array2.dim1 a2D, Array2.dim2 a2D)

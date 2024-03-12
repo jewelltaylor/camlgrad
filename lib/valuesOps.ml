@@ -182,26 +182,26 @@ let add a b =
   | (V2D _, V2D _) -> addV2D a b
   | _ -> raise TypeException 
 
-let matvecmul a b = 
+let matvecmul ?(trans_a = 111) a b = 
   match (a, b) with 
   | (V2D a2D, V1D b1D) -> begin
     if (Array2.dim2 a2D <> Array1.dim b1D) then raise SizeException;
     let (dim1, dim2) = (Array2.dim1 a2D, Array2.dim2 a2D) in
     let y1D = Array1.init Float32 c_layout dim1 (fun _ -> 0.0) in 
-    cblas_sgemv 101 111 dim1 dim2 1.0 (bigarray_start array2 a2D) dim2
+    cblas_sgemv 101 trans_a dim1 dim2 1.0 (bigarray_start array2 a2D) dim2
       (bigarray_start array1 b1D) 1 0.0 (bigarray_start array1 y1D) 1;
     V1D y1D
   end
   | _ -> raise TypeException 
 
-let matmul a b = 
+let matmul ?(trans_a = 111) ?(trans_b = 111) a b = 
   match (a, b) with 
   | (V2D a2D, V2D b2D) -> begin
     if (Array2.dim2 a2D <> Array2.dim1 b2D) then raise SizeException;
     let (adim1, adim2, _, bdim2) = 
       (Array2.dim1 a2D, Array2.dim2 a2D, Array2.dim1 b2D, Array2.dim2 b2D) in
     let y2D = Array2.init Float32 c_layout adim1 bdim2 (fun _ _ -> 0.0) in 
-    cblas_sgemm 101 111 111 adim1 bdim2 adim2 1.0 (bigarray_start array2 a2D) 
+    cblas_sgemm 101 trans_a trans_b adim1 bdim2 adim2 1.0 (bigarray_start array2 a2D) 
       adim2 (bigarray_start array2 b2D) bdim2 0.0 (bigarray_start array2 y2D) bdim2;
     V2D y2D
   end
@@ -212,3 +212,8 @@ let sub a b =
   | (V1D _, V1D _) -> add a (neg b)
   | (V2D _, V2D _) -> add a (neg b)
   | _ -> raise TypeException
+
+let dim a =
+  match a with
+  | V1D a1D -> D1D (Array1.dim a1D)
+  | V2D a2D -> D2D (Array2.dim1 a2D, Array2.dim2 a2D)
