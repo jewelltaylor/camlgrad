@@ -37,13 +37,6 @@ let matmul a b =
   let op = MATMUL (a, b) in
   {tid; vals; grad; op}
 
-let matvecmul a b =
-  let tid = random_int in
-  let vals = Values.matvecmul a.vals b.vals in
-  let grad = Values.zeros (Values.dims vals) in
-  let op = MATVECMUL (a, b) in
-  {tid; vals; grad; op}
-
 let neg a =
   let tid = random_int in
   let vals = Values.neg a.vals in
@@ -79,7 +72,4 @@ let pow2 a =
   let op = POW2 a in
   {tid; vals; grad; op}
 
-let dim a = 
-  match a.vals with
-  | V1D a1D -> D1D (Array1.dim a1D)
-  | V2D a2D -> D2D (Array2.dim1 a2D, Array2.dim2 a2D)
+let dim a = (Array2.dim1 a, Array2.dim2 a)
