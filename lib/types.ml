@@ -10,10 +10,14 @@ type values = (float, float32_elt, c_layout) Array2.t
 
 type dimensions = int * int
 
+type gradient = 
+  | GRAD of values
+  | NONE
+
 type tensor = {
   tid : int;
   vals : values;
-  mutable grad : values;
+  mutable grad : gradient;
   op : operator;
 } and operator = 
   | ADD of tensor * tensor 
@@ -28,3 +32,4 @@ type tensor = {
   | SQRT of tensor
   | POW2 of tensor 
   | CREATE
+
