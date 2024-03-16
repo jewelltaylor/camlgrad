@@ -93,24 +93,73 @@ let matmul_backward r =
   | MATMUL (a, b) -> begin 
     let r_grad = get_r_grad r in
     let (n, p), (_, m) = Values.dim a.vals, Values.dim b.vals in 
-    let a_grad = Values.create (n, p) 0.0 in
-    let b_grad = Values.create (p, m) 0.0 in
+    let a_grad = get_grad a.grad (n, p) in
+    let b_grad = get_grad b.grad (p, m) in
     a.grad <- GRAD (Values.add a_grad (Values.matmul ~trans_b:112 r_grad b.vals));
     b.grad <- GRAD (Values.add b_grad (Values.matmul ~trans_a:112 a.vals r_grad));
   end
   | _ -> raise TypeException
 
-let backward r = 
-  let r_grad = get_r_grad r in
-  r.grad <- GRAD (Values.ones (Values.dim r_grad));
+let sum_backward r = 
   match r.op with
-  | ADD (_, _) -> add_backward r
-  | MUL (_, _) -> mul_backward r
-  | DIV (_, _) -> div_backward r
-  | NEG (_) -> neg_backward r
-  | POW2 (_) -> pow_backward r
-  | EXP (_) -> exp_backward r
-  | LOG (_) -> log_backward r
-  | SQRT (_) -> sqrt_backward r
-  | MATMUL (_, _) -> matmul_backward r
+  | SUM a -> begin
+    let a_grad = get_grad a.grad (Values.dim a.vals) in
+    a.grad <- GRAD (Values.add a_grad (Values.create (Values.dim a.vals) 1.0))
+  end
   | _ -> raise TypeException
+
+let backward r = 
+  if (Values.dim r.vals <> (1, 1)) then raise SizeException;
+  r.grad <- GRAD (Values.ones (1, 1));
+  let rec backward_helper r =
+    match r.op with
+    | ADD (a, b) -> begin 
+      add_backward r;
+      backward_helper a;
+      backward_helper b;
+    end
+    | MUL (a, b) -> begin 
+      mul_backward r;
+      backward_helper a;
+      backward_helper b;
+    end
+    | DIV (a, b) -> begin
+      div_backward r;
+      backward_helper a;
+      backward_helper b;
+    end
+    | NEG a -> begin 
+      neg_backward r;
+      backward_helper a;
+    end
+    | POW2 a -> begin 
+      pow_backward r;
+      backward_helper a;
+    end
+    | EXP a -> begin 
+      exp_backward r;
+      backward_helper a;
+    end
+    | LOG a -> begin
+      log_backward r;
+      backward_helper a;
+    end
+    | SQRT a -> begin 
+      sqrt_backward r;
+      backward_helper a;
+    end
+    | SUM a -> begin
+      sum_backward r;
+      backward_helper a;
+    end
+    | MATMUL (a, b) -> begin 
+      matmul_backward r;
+      backward_helper a;
+      backward_helper b;
+    end
+    | CREATE -> ()  
+    | _ -> begin 
+      print_endline "HERE";
+      raise TypeException
+    end
+  in backward_helper r;;

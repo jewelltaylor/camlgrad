@@ -72,4 +72,11 @@ let pow2 a =
   let op = POW2 a in
   {tid; vals; grad; op}
 
+let sum a = 
+  let tid = random_int in
+  let vals = Values.sum a.vals in
+  let grad = NONE in
+  let op = SUM a in
+  {tid; vals; grad; op}
+  
 let dim a = (Array2.dim1 a, Array2.dim2 a)

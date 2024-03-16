@@ -25,11 +25,11 @@ type tensor = {
   | MUL of tensor * tensor 
   | DIV of tensor * tensor
   | MATMUL of tensor * tensor
-  | MATVECMUL of tensor * tensor 
   | NEG of tensor 
   | EXP of tensor 
   | LOG of tensor 
   | SQRT of tensor
   | POW2 of tensor 
+  | SUM of tensor 
   | CREATE
 

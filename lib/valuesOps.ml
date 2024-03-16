@@ -29,7 +29,8 @@ let pow2 a =
 let dot a b = 
     if (Array2.dim1 a, Array2.dim2 a) <> (Array2.dim1 b, Array2.dim2 b) then raise SizeException;
     let (dim1, dim2) = (Array2.dim1 a, Array2.dim2 a) in
-    cblas_sdot (dim1 * dim2) (bigarray_start array2 a) 1 (bigarray_start array2 b) 1
+    let r = cblas_sdot (dim1 * dim2) (bigarray_start array2 a) 1 (bigarray_start array2 b) 1 in
+    Array2.init Float32 c_layout 1 1 (fun _ _ -> r)
 
 let sum a = 
     let (dim1, dim2) = (Array2.dim1 a, Array2.dim2 a) in
