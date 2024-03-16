@@ -54,7 +54,6 @@ let add a b =
 let matmul ?(trans_a = 111) ?(trans_b = 111) a b = 
     match (trans_a, trans_b) with
     | (111, 111) -> begin
-        Printf.printf "%d %d \n" trans_a trans_b;
         if (Array2.dim2 a <> Array2.dim1 b) then raise SizeException;
         let adim1, adim2, bdim2 = Array2.dim1 a, Array2.dim2 a, Array2.dim2 b in
         let y = Array2.init Float32 c_layout adim1 bdim2 (fun _ _ -> 0.0) in 
@@ -63,29 +62,18 @@ let matmul ?(trans_a = 111) ?(trans_b = 111) a b =
         y 
     end
     | (111, 112) -> begin
-        Printf.printf "%d %d \n" trans_a trans_b;
         if (Array2.dim2 a <> Array2.dim2 b) then raise SizeException;
         let adim1, adim2, bdim1, bdim2 = Array2.dim1 a, Array2.dim2 a, Array2.dim1 b, Array2.dim2 b in
         let y = Array2.init Float32 c_layout adim1 bdim1 (fun _ _ -> 0.0) in 
         cblas_sgemm 101 trans_a trans_b adim1 bdim1 adim2 1.0 (bigarray_start array2 a) 
-          adim2 (bigarray_start array2 b) bdim2 0.0 (bigarray_start array2 y) bdim2;
+          adim2 (bigarray_start array2 b) bdim2 0.0 (bigarray_start array2 y) bdim1;
         y 
     end
     | (112, 111) -> begin
-        Printf.printf "%d %d \n" trans_a trans_b;
         if (Array2.dim1 a <> Array2.dim1 b) then raise SizeException;
-        let adim1, adim2, bdim2 = Array2.dim1 a, Array2.dim2 a, Array2.dim2 b in
+        let adim1, adim2, _, bdim2 = Array2.dim1 a, Array2.dim2 a, Array2.dim1 b, Array2.dim2 b in
         let y = Array2.init Float32 c_layout adim2 bdim2 (fun _ _ -> 0.0) in 
         cblas_sgemm 101 trans_a trans_b adim2 bdim2 adim1 1.0 (bigarray_start array2 a) 
-          adim2 (bigarray_start array2 b) bdim2 0.0 (bigarray_start array2 y) bdim2;
-        y 
-    end
-    | (112, 112) -> begin
-        Printf.printf "%d %d \n" trans_a trans_b;
-        if (Array2.dim1 a <> Array2.dim2 b) then raise SizeException;
-        let adim1, adim2, bdim1, bdim2 = Array2.dim1 a, Array2.dim2 a, Array2.dim1 b, Array2.dim2 b in
-        let y = Array2.init Float32 c_layout adim2 bdim1 (fun _ _ -> 0.0) in 
-        cblas_sgemm 101 trans_a trans_b adim2 bdim1 adim1 1.0 (bigarray_start array2 a) 
           adim2 (bigarray_start array2 b) bdim2 0.0 (bigarray_start array2 y) bdim2;
         y 
     end

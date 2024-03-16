@@ -92,14 +92,11 @@ let matmul_backward r =
   match r.op with 
   | MATMUL (a, b) -> begin 
     let r_grad = get_r_grad r in
-    let (n, p), (p2, m) = Values.dim a.vals, Values.dim b.vals in 
-    let a_grad = Values.create (p, m) 1.0 in
-    let b_grad = Values.create (n, p) 1.0 in
-    Printf.printf "%d %d %d %d \n" n p p2 m;
-    a.grad <- GRAD (Values.add a_grad (Values.matmul ~trans_a:112 a.vals r_grad));
-    Printf.printf "%d %d %d %d \n" n p p2 m;
-    b.grad <- GRAD (Values.add b_grad (Values.matmul ~trans_b:112 r_grad b.vals));
-    Printf.printf "%d %d %d %d \n" n p p2 m;
+    let (n, p), (_, m) = Values.dim a.vals, Values.dim b.vals in 
+    let a_grad = Values.create (n, p) 0.0 in
+    let b_grad = Values.create (p, m) 0.0 in
+    a.grad <- GRAD (Values.add a_grad (Values.matmul ~trans_b:112 r_grad b.vals));
+    b.grad <- GRAD (Values.add b_grad (Values.matmul ~trans_a:112 a.vals r_grad));
   end
   | _ -> raise TypeException
 
