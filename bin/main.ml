@@ -9,13 +9,7 @@ let c = Tensor.matmul a b in
 let d = Tensor.sum c in 
 Tensor.backward d;
 
-print_endline "C";
 Tensor.printVals c;
-print_endline "D";
 Tensor.printVals d;
-print_endline "gC";
-Tensor.printGrad c;
-print_endline "gB";
 Tensor.printGrad b;
-print_endline "gA";
 Tensor.printGrad a;

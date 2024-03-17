@@ -10,8 +10,16 @@ let get_r_grad tnsr =
   | GRAD grad -> grad
   | _ ->  raise TypeException
 
-let printVals (tnsr: tensor) = Values.print tnsr.vals 
+let printVals (tnsr: tensor) =
+  let adim1, adim2 = Values.dim tnsr.vals in
+  Values.print tnsr.vals;
+  Printf.printf "<values: id=%d shape=(%d, %d)> \n" tnsr.tid adim1 adim2
+
 let printGrad (tnsr: tensor) = 
   match tnsr.grad with
-  | GRAD grad -> Values.print grad
+  | GRAD grad -> begin 
+    let adim1, adim2 = Values.dim grad in
+    Values.print grad;
+  Printf.printf "<gradient: id=%d shape=(%d, %d)> \n" tnsr.tid adim1 adim2
+  end
   | NONE -> print_endline "NONE"
