@@ -159,7 +159,6 @@ let backward r =
     end
     | CREATE -> ()  
     | _ -> begin 
-      print_endline "HERE";
       raise TypeException
     end
   in backward_helper r;;
