@@ -1,0 +1,5 @@
+(library
+ (name values)
+ (public_name camlgrad.values)
+ (libraries camlgrad)
+)

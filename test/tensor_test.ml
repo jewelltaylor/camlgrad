@@ -25,8 +25,8 @@ let test_add () =
 
   let dr_da = Values.create (2, 4) 1.0 in
   let dr_db = Values.create (2, 4) 1.0 in
-  check_equal dr_da (TensorUtils.get_r_grad a);
-  check_equal dr_db (TensorUtils.get_r_grad b)
+  check_equal dr_da (Tensor.get_r_grad a);
+  check_equal dr_db (Tensor.get_r_grad b)
 
 let test_sub () = 
   let a = Tensor.create (6, 4) 90.0 in
@@ -40,8 +40,8 @@ let test_sub () =
 
   let dr_da = Values.create (6, 4) 1.0 in
   let dr_db = Values.create (6, 4) (-1.0) in
-  check_equal dr_da (TensorUtils.get_r_grad a);
-  check_equal dr_db (TensorUtils.get_r_grad b)
+  check_equal dr_da (Tensor.get_r_grad a);
+  check_equal dr_db (Tensor.get_r_grad b)
 
 let test_mul () =
   let a = Tensor.create (6, 10) 1.5 in
@@ -55,8 +55,8 @@ let test_mul () =
 
   let dr_da = Values.create (6, 10) 10.0 in
   let dr_db = Values.create (6, 10) (1.5) in
-  check_equal dr_da (TensorUtils.get_r_grad a);
-  check_equal dr_db (TensorUtils.get_r_grad b)
+  check_equal dr_da (Tensor.get_r_grad a);
+  check_equal dr_db (Tensor.get_r_grad b)
 
 let test_div () =
   let a = Tensor.create (3, 3) 5.5 in
@@ -70,8 +70,8 @@ let test_div () =
 
   let dr_da = Values.create (3, 3) 2.0 in
   let dr_db = Values.create (3, 3) (-22.0) in
-  check_equal dr_da (TensorUtils.get_r_grad a);
-  check_equal dr_db (TensorUtils.get_r_grad b)
+  check_equal dr_da (Tensor.get_r_grad a);
+  check_equal dr_db (Tensor.get_r_grad b)
 
 let test_matmul () = 
   let a = Tensor.create (2, 4) 10.0 in
@@ -84,8 +84,8 @@ let test_matmul () =
   Tensor.backward r;
   let dr_da = Values.create (2, 4) 45.0 in
   let dr_db = Values.create (4, 3) 20.0 in
-  check_equal dr_da (TensorUtils.get_r_grad a);
-  check_equal dr_db (TensorUtils.get_r_grad b)
+  check_equal dr_da (Tensor.get_r_grad a);
+  check_equal dr_db (Tensor.get_r_grad b)
 
 let test_neg () =
   let a = Tensor.create (10, 3) 103.3 in
@@ -97,7 +97,7 @@ let test_neg () =
   Tensor.backward r;
 
   let dr_da = Values.create (10, 3) (-1.0) in
-  check_equal dr_da (TensorUtils.get_r_grad a)
+  check_equal dr_da (Tensor.get_r_grad a)
 
 let test_exp () =
   let a = Tensor.create (10, 3) 4.0 in
@@ -109,7 +109,7 @@ let test_exp () =
   Tensor.backward r;
 
   let dr_da = Values.create (10, 3) (54.5981) in
-  check_equal dr_da (TensorUtils.get_r_grad a)
+  check_equal dr_da (Tensor.get_r_grad a)
 
 let test_log () =
   let a = Tensor.create (7, 30) 4.0 in
@@ -121,7 +121,7 @@ let test_log () =
   Tensor.backward r;
 
   let dr_da = Values.create (7, 30) 0.25 in
-  check_equal dr_da (TensorUtils.get_r_grad a)
+  check_equal dr_da (Tensor.get_r_grad a)
 
 let test_pow2 () =
   let a = Tensor.create (9, 10) 4.0 in
@@ -133,7 +133,7 @@ let test_pow2 () =
   Tensor.backward r;
 
   let dr_da = Values.create (9, 10) 8.0 in
-  check_equal dr_da (TensorUtils.get_r_grad a)
+  check_equal dr_da (Tensor.get_r_grad a)
 
 let test_sqrt () =
   let a = Tensor.create (90, 10) 64.0 in
@@ -145,7 +145,7 @@ let test_sqrt () =
   Tensor.backward r;
 
   let dr_da = Values.create (90, 10) 0.0625 in
-  check_equal dr_da (TensorUtils.get_r_grad a)
+  check_equal dr_da (Tensor.get_r_grad a)
 
 let () =
   let open Alcotest in

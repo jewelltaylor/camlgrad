@@ -1,6 +1,6 @@
 open Bigarray
-open Types 
-open Utils
+open Camlgrad.Types 
+open Camlgrad.Utils
 
 let add a b =
   let tid = random_int in

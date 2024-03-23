@@ -1,4 +1,4 @@
-open Types
+open Camlgrad.Types
 
 let get_grad curr_grad dims =
   match curr_grad with

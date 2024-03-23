@@ -1,0 +1,5 @@
+(library 
+  (name tensor)
+  (public_name camlgrad.tensor) 
+  (libraries camlgrad camlgrad.values)
+ )

@@ -1,5 +1,7 @@
 (library
  (name camlgrad)
+ (public_name camlgrad)
+ (modules :standard \)
  (libraries ctypes-foreign)
  (flags (:standard -cclib -lcblas)
         (:standard

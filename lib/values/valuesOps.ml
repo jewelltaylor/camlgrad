@@ -1,8 +1,9 @@
 open Bigarray
 open Ctypes
-open Vforce
-open Cblas
-open Types
+open Camlgrad.Vforce
+open Camlgrad.Cblas
+open Camlgrad.Types
+
 let unary_op f a = 
     let (dim1, dim2) = (Array2.dim1 a, Array2.dim2 a) in
     let y = Array2.create Float32 c_layout dim1 dim2 in 
