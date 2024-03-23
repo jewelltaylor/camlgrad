@@ -30,8 +30,8 @@ let div_backward r =
     let r_grad = get_r_grad r in
     let dims = Values.dim r_grad in
     let a_grad, b_grad = get_grad a.grad dims, get_grad b.grad dims in 
-    a.grad <- GRAD (Values.add a_grad (Values.div b.vals r_grad));
-    b.grad <- GRAD (Values.add b_grad (Values.div a.vals r_grad));
+    a.grad <- GRAD (Values.add a_grad (Values.div r_grad b.vals));
+    b.grad <- GRAD (Values.add b_grad (Values.mul r_grad (Values.neg (Values.div a.vals (Values.pow2 b.vals)))));
   end
   | _ -> raise TypeException
 
@@ -43,6 +43,17 @@ let neg_backward r =
     let a_grad = get_grad a.grad dims in
     let b = Values.create (Values.dim a.vals) (-1.0) in 
     a.grad <- GRAD (Values.add a_grad (Values.mul b r_grad));
+  end
+  | _ -> raise TypeException
+
+let sub_backward r = 
+  match r.op with
+  | SUB (a, b) -> begin 
+    let r_grad = get_r_grad r in
+    let dims = Values.dim r_grad in
+    let a_grad, b_grad = get_grad a.grad dims, get_grad b.grad dims in 
+    a.grad <- GRAD (Values.add a_grad r_grad); 
+    b.grad <- GRAD (Values.sub b_grad r_grad);
   end
   | _ -> raise TypeException
 
@@ -84,7 +95,7 @@ let sqrt_backward r =
     let dims = Values.dim r_grad in
     let a_grad = get_grad a.grad dims in
     let coef = Values.create (Values.dim a.vals) 0.5 in
-    a.grad <- GRAD (Values.add a_grad (Values.mul (Values.mul coef (Values.reciprocal r.vals)) r_grad));
+    a.grad <- GRAD (Values.add a_grad (Values.mul (Values.mul coef (Values.reciprocal (Values.sqrt a.vals))) r_grad));
   end
   | _ -> raise TypeException
 
@@ -123,6 +134,11 @@ let backward r =
       backward_helper a;
       backward_helper b;
     end
+    | SUB (a, b) -> begin 
+      sub_backward r;
+      backward_helper a;
+      backward_helper b;
+    end
     | DIV (a, b) -> begin
       div_backward r;
       backward_helper a;
@@ -158,7 +174,4 @@ let backward r =
       backward_helper b;
     end
     | CREATE -> ()  
-    | _ -> begin 
-      raise TypeException
-    end
   in backward_helper r;;

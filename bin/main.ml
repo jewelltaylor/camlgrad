@@ -1,15 +1,12 @@
 open Camlgrad;;
 
-let dim1 = 3 in 
-let dim2 = 2 in 
-let dim3 = 6 in
-let a = Tensor.from_array (Array.make_matrix dim1 dim2 4.0) in
-let b = Tensor.create (dim2, dim3) 16.0 in
-let c = Tensor.matmul a b in
-let d = Tensor.sum c in 
-Tensor.backward d;
+let a = Tensor.create (6, 4) 90.0 in
+let b = Tensor.create (6, 4) 10.0 in
+let c = Tensor.sub a b in
 
-Tensor.printVals c;
-Tensor.printVals d;
-Tensor.printGrad b;
-Tensor.printGrad a;
+let r = Tensor.sum c in
+print_endline "Here";
+Tensor.backward r;
+
+TensorUtils.printGrad a; 
+TensorUtils.printGrad r; 
