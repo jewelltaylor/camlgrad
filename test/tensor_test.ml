@@ -82,8 +82,6 @@ let test_matmul () =
 
   let r = Tensor.sum c in
   Tensor.backward r;
-  TensorUtils.printGrad a;
-  TensorUtils.printGrad b;
   let dr_da = Values.create (2, 4) 45.0 in
   let dr_db = Values.create (4, 3) 20.0 in
   check_equal dr_da (TensorUtils.get_r_grad a);
