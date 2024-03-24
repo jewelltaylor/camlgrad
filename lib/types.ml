@@ -37,5 +37,8 @@ type tensor = {
 
 type mlp_layer = {
   weights : tensor;
-  activation : tensor -> tensor;
+  bias : tensor;
+  activation: tensor -> tensor 
 }
+
+type mlp = mlp_layer array

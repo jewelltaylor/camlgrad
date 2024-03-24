@@ -86,7 +86,7 @@ let relu a =
   let dims = Values.dim a.vals in
   let vals = Values.div (Values.add a.vals (Values.abs a.vals)) (Values.create dims 2.0) in
   let grad = NONE in
-  let op = RELU a in
+  let op:operator= RELU a in
   {tid; vals; grad; op}
 
 
@@ -95,5 +95,5 @@ let sigmoid a =
   let dims = Values.dim a.vals in
   let vals = Values.div (Values.ones dims) ((Values.add (Values.ones dims) (Values.exp (Values.neg a.vals)))) in
   let grad = NONE in
-  let op = SIGMOID a in
+  let op:operator = SIGMOID a in
   {tid; vals; grad; op}

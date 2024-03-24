@@ -1,0 +1,12 @@
+open Camlgrad.Types
+
+let get_mlp_layer ?(activation = Tensor.sigmoid) dims =
+  let (_, d2) = dims in
+  let weights = Tensor.random dims in 
+  let bias = Tensor.random (1, d2) in
+  {weights; bias; activation}
+
+let mlp_layer_forward layer input =
+  let linearTransform = Tensor.matmul input layer.weights in
+  let affineTransform = Tensor.add linearTransform layer.bias in 
+  layer.activation affineTransform 
