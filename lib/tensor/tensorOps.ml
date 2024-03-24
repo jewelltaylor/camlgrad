@@ -79,7 +79,7 @@ let sum a =
   let op = SUM a in
   {tid; vals; grad; op}
   
-let dim a = (Array2.dim1 a, Array2.dim2 a)
+let dim a = (Array2.dim1 a.vals, Array2.dim2 a.vals)
 
 let relu a = 
   let tid = random_int in
