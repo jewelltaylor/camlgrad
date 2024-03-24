@@ -14,6 +14,7 @@ let log a = unary_op vvlogf a
 let exp a = unary_op vvexpf a
 let sqrt a = unary_op vvsqrtf a
 let reciprocal a = unary_op vvrecf a
+let abs a = unary_op vvfabsf a
 
 let vforce_elementwise_binary_op f a b = 
     if (Array2.dim1 a, Array2.dim2 a) <> (Array2.dim1 b, Array2.dim2 b) then raise SizeException;

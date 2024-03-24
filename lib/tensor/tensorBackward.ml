@@ -115,7 +115,33 @@ let sum_backward r =
   match r.op with
   | SUM a -> begin
     let a_grad = get_grad a.grad (Values.dim a.vals) in
-    a.grad <- GRAD (Values.add a_grad (Values.create (Values.dim a.vals) 1.0))
+    let r_grad = get_r_grad r in
+    a.grad <- GRAD (Values.add a_grad (Values.create (Values.dim a.vals) r_grad.{0, 0}))
+  end
+  | _ -> raise TypeException
+
+let relu_backward r = 
+  match r.op with
+  | RELU a -> begin
+    let r_grad = get_r_grad r in
+    let a_grad = get_grad a.grad (Values.dim a.vals) in
+    a.grad <- GRAD 
+    (Values.add a_grad 
+    (Values.mul r_grad 
+      (Values.div 
+        (Values.add a.vals (Values.abs a.vals)) 
+        (Values.mul a.vals (Values.create (Values.dim a.vals) 2.0))))
+    )
+  end
+  | _ -> raise TypeException
+
+let sigmoid_backward r =
+  match r.op with
+  | SIGMOID a -> begin 
+    let r_grad = get_r_grad r in
+    let dims = Values.dim r_grad in
+    let a_grad = get_grad a.grad dims in
+    a.grad <- GRAD (Values.add a_grad (Values.mul r_grad (Values.mul r.vals (Values.sub (Values.ones dims) r.vals))));
   end
   | _ -> raise TypeException
 
@@ -172,6 +198,14 @@ let backward r =
       matmul_backward r;
       backward_helper a;
       backward_helper b;
+    end
+    | RELU a -> begin
+      relu_backward r;
+      backward_helper a;
+    end
+    | SIGMOID a -> begin
+      sigmoid_backward r;
+      backward_helper a;
     end
     | CREATE -> ()  
   in backward_helper r;;

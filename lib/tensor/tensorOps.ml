@@ -80,3 +80,20 @@ let sum a =
   {tid; vals; grad; op}
   
 let dim a = (Array2.dim1 a, Array2.dim2 a)
+
+let relu a = 
+  let tid = random_int in
+  let dims = Values.dim a.vals in
+  let vals = Values.div (Values.add a.vals (Values.abs a.vals)) (Values.create dims 2.0) in
+  let grad = NONE in
+  let op = RELU a in
+  {tid; vals; grad; op}
+
+
+let sigmoid a = 
+  let tid = random_int in
+  let dims = Values.dim a.vals in
+  let vals = Values.div (Values.ones dims) ((Values.add (Values.ones dims) (Values.exp (Values.neg a.vals)))) in
+  let grad = NONE in
+  let op = SIGMOID a in
+  {tid; vals; grad; op}

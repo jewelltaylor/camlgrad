@@ -147,6 +147,42 @@ let test_sqrt () =
   let dr_da = Values.create (90, 10) 0.0625 in
   check_equal dr_da (Tensor.get_r_grad a)
 
+let test_relu () =
+  let a = Tensor.from_array [|[|4.0; -4.0|]; [|-4.0; 4.0|]|] in
+  let b = Tensor.relu a in
+  let b_gt = Tensor.from_array [|[|4.0; 0.0|]; [|0.0; 4.0|]|] in
+  check_equal b.vals b_gt.vals;
+
+  let r = Tensor.sum b in
+  Tensor.backward r;
+
+  let dr_da = Tensor.from_array [|[|1.0; 0.0|]; [|0.0; 1.0|]|] in
+  check_equal dr_da.vals (Tensor.get_r_grad a)
+
+let test_sum () =
+  let a = Tensor.create (5, 2) 10.0 in
+  let b = Tensor.sum a in
+  let b_gt = Tensor.create (1, 1) 100.0 in
+  check_equal b.vals b_gt.vals;
+
+  let r = Tensor.sum b in
+  Tensor.backward r;
+
+  let dr_da = Values.create (5, 2) 1.0 in
+  check_equal dr_da (Tensor.get_r_grad a)
+
+let test_sigmoid () =
+  let a = Tensor.create (5, 5) 0.5 in
+  let b = Tensor.sigmoid a in
+  let b_gt = Tensor.create (5, 5) 0.622459 in
+  check_equal b.vals b_gt.vals;
+
+  let r = Tensor.sum b in
+  Tensor.backward r;
+
+  let dr_da = Values.create (5, 5) 0.2350 in
+  check_equal dr_da (Tensor.get_r_grad a)
+
 let () =
   let open Alcotest in
   run "Tensor Operations" [
@@ -160,4 +196,7 @@ let () =
     "power", [test_case "Test pow2 function" `Quick test_pow2];
     "sqrt", [test_case "Test sqrt function" `Quick test_sqrt];
     "matmul", [test_case "Test matmul function" `Quick test_matmul];
+    "relu", [test_case "Test relu function" `Quick test_relu];
+    "sum", [test_case "Test sum function" `Quick test_sum];
+    "sigmoid", [test_case "Test sigmoid function" `Quick test_sigmoid];
   ]

@@ -24,3 +24,7 @@ let vvdivf =
 let vvrecf =
   foreign "vvrecf"
     ((ptr float) @-> (ptr float) @-> (ptr int) @-> returning void)
+
+let vvfabsf =
+  foreign "vvfabsf"
+    ((ptr float) @-> (ptr float) @-> (ptr int) @-> returning void)

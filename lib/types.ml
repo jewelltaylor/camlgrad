@@ -31,5 +31,13 @@ type tensor = {
   | SQRT of tensor
   | POW2 of tensor 
   | SUM of tensor 
+  | RELU of tensor
+  | SIGMOID of tensor
   | CREATE
 
+type mlp_layer = {
+  weights : tensor;
+  activation : tensor -> tensor;
+  forward : tensor -> tensor;
+  backward : tensor -> unit;
+}
