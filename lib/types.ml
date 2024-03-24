@@ -38,6 +38,4 @@ type tensor = {
 type mlp_layer = {
   weights : tensor;
   activation : tensor -> tensor;
-  forward : tensor -> tensor;
-  backward : tensor -> unit;
 }

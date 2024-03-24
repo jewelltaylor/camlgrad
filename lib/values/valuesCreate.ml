@@ -9,3 +9,8 @@ let create (dims: dimensions) (value : float) =
 
 let ones (dims: dimensions) = create dims 1.0 
 let zeros (dims : dimensions) = create dims 0.0
+
+let random (dims : dimensions) = 
+  let (dim1, dim2) = dims in 
+   Array2.init Float32 c_layout dim1 dim2 (fun _ _ -> (Random.float 1.0) -. 0.5 )
+

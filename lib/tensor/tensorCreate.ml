@@ -17,3 +17,10 @@ let from_array (arr : standard_array) =
   let grad = NONE in 
   let op = CREATE in
   {tid; vals; grad; op}
+
+let random dims = 
+  let tid = random_int in
+  let vals = Values.random dims in 
+  let grad = NONE in 
+  let op = CREATE in
+  {tid; vals; grad; op}
