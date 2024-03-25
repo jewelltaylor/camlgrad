@@ -19,6 +19,13 @@ let test_mean_squared_error () =
   let gt_mse = Tensor.create (1, 1) 4.0 in
   check_equal mse.vals gt_mse.vals
 
+let test_binary_cross_entropy () =
+  let pred = Tensor.from_array [|[|0.502243; 0.306248|]|] in
+  let target = Tensor.from_array [|[|1.0; 0.0|]|] in
+  let bce = NeuralNet.binary_cross_entropy pred target in
+  let gt_bce = Tensor.create (1, 1) 0.527156 in
+  check_equal bce.vals gt_bce.vals
+
 let test_mlp_layer_forward () =
   let (dimIn, dimOut) = (2, 2) in
   let mlp_layer = NeuralNet.get_mlp_layer (dimIn, dimOut) in
@@ -30,10 +37,6 @@ let test_mlp_layer_forward () =
 let test_mlp_forward () =
   let (dimIn, dimOut) = (2, 2) in
   let mlp = NeuralNet.get_mlp [|(Tensor.sigmoid, (dimIn, dimOut)); (Tensor.sigmoid, (dimIn, dimOut))|] in
-  Tensor.printVals mlp.(0).weights;
-  Tensor.printVals mlp.(1).weights;
-  Tensor.printVals mlp.(0).bias;
-  Tensor.printVals mlp.(1).bias;
   let input = Tensor.ones (1, 2) in
   let (result, int_results) = NeuralNet.mlp_forward mlp input in
   let gt_int_results = [|Tensor.from_array [|[|0.261923; 0.55867|]|]; Tensor.from_array [|[|0.4209009; 0.38563|]|]|] in 
@@ -44,7 +47,8 @@ let test_mlp_forward () =
 let () =
   let open Alcotest in
   run "Tensor Operations" [
-    "mse", [test_case "Test mse function" `Quick test_mean_squared_error];
+    "mse", [test_case "Test mean squared error function" `Quick test_mean_squared_error];
+    "bce", [test_case "Test binary cross entropy loss function" `Quick test_binary_cross_entropy];
     "mlp layer forward", [test_case "Test mlp layer forward function" `Quick test_mlp_layer_forward];
     "mlp forward", [test_case "Test mlp forward function" `Quick test_mlp_forward];
   ]
