@@ -16,7 +16,7 @@ type gradient =
 
 type tensor = {
   tid : int;
-  vals : values;
+  mutable vals : values;
   mutable grad : gradient;
   op : operator;
 } and operator = 
