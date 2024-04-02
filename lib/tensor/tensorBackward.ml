@@ -1,147 +1,143 @@
 open Camlgrad.Types
 open TensorUtils
 
+let accumulate_gradient a dims = 
+  let acc_grad = get_grad_and_init_to_zero_if_none a.acc_grad dims in
+  a.acc_grad <- GRAD (Values.add acc_grad (get_grad a))
 
 let add_backward r = 
   match r.op with
   | ADD (a, b) -> begin 
-    let r_grad = get_r_grad r in
-    let dims = Values.dim r_grad in
-    let a_grad, b_grad = get_grad a.grad dims, get_grad b.grad dims in 
-    a.grad <- GRAD (Values.add a_grad r_grad); 
-    b.grad <- GRAD (Values.add b_grad r_grad);
+    let r_grad = get_grad r in
+    a.grad <- GRAD r_grad; 
+    accumulate_gradient a (Values.dim r_grad);
+    b.grad <- GRAD r_grad; 
+    accumulate_gradient b (Values.dim r_grad);
   end
   | _ -> raise TypeException
 
 let mul_backward r = 
   match r.op with
   | MUL (a, b) -> begin
-    let r_grad = get_r_grad r in
-    let dims = Values.dim r_grad in
-    let a_grad, b_grad = get_grad a.grad dims, get_grad b.grad dims in 
-    a.grad <- GRAD (Values.add a_grad (Values.mul b.vals r_grad)); 
-    b.grad <- GRAD (Values.add b_grad (Values.mul a.vals r_grad));
+    let r_grad = get_grad r in
+    a.grad <- GRAD (Values.mul b.vals r_grad); 
+    accumulate_gradient a (Values.dim r_grad); 
+    b.grad <- GRAD (Values.mul a.vals r_grad); 
+    accumulate_gradient b (Values.dim r_grad); 
   end
   | _ -> raise TypeException
 
 let div_backward r = 
   match r.op with
   | DIV (a, b) -> begin 
-    let r_grad = get_r_grad r in
-    let dims = Values.dim r_grad in
-    let a_grad, b_grad = get_grad a.grad dims, get_grad b.grad dims in 
-    a.grad <- GRAD (Values.add a_grad (Values.div r_grad b.vals));
-    b.grad <- GRAD (Values.add b_grad (Values.mul r_grad (Values.neg (Values.div a.vals (Values.pow2 b.vals)))));
+    let r_grad = get_grad r in
+    a.grad <- GRAD (Values.div r_grad b.vals); 
+    accumulate_gradient a (Values.dim r_grad); 
+    b.grad <- GRAD (Values.mul r_grad (Values.neg (Values.div a.vals (Values.pow2 b.vals)))); 
+    accumulate_gradient b (Values.dim r_grad); 
   end
   | _ -> raise TypeException
 
 let neg_backward r = 
   match r.op with
   | NEG a -> begin 
-    let r_grad = get_r_grad r in
-    let dims = Values.dim r_grad in
-    let a_grad = get_grad a.grad dims in
+    let r_grad = get_grad r in
     let b = Values.create (Values.dim a.vals) (-1.0) in 
-    a.grad <- GRAD (Values.add a_grad (Values.mul b r_grad));
+    a.grad <- GRAD (Values.mul b r_grad);
+    accumulate_gradient a (Values.dim r_grad); 
   end
   | _ -> raise TypeException
 
 let sub_backward r = 
   match r.op with
   | SUB (a, b) -> begin 
-    let r_grad = get_r_grad r in
-    let dims = Values.dim r_grad in
-    let a_grad, b_grad = get_grad a.grad dims, get_grad b.grad dims in 
-    a.grad <- GRAD (Values.add a_grad r_grad); 
-    b.grad <- GRAD (Values.sub b_grad r_grad);
+    let r_grad = get_grad r in
+    a.grad <- GRAD r_grad; 
+    accumulate_gradient a (Values.dim r_grad); 
+    b.grad <- GRAD (Values.neg r_grad);
+    accumulate_gradient b (Values.dim r_grad); 
   end
   | _ -> raise TypeException
 
 let exp_backward r =
   match r.op with
   | EXP a -> begin 
-    let r_grad = get_r_grad r in
-    let dims = Values.dim r_grad in
-    let a_grad = get_grad a.grad dims in
-    a.grad <- GRAD (Values.add a_grad (Values.mul r.vals r_grad));
+    let r_grad = get_grad r in
+    a.grad <- GRAD (Values.mul r.vals r_grad);
+    accumulate_gradient a (Values.dim r_grad); 
   end
   | _ -> raise TypeException
 
 let pow_backward r =
   match r.op with
   | POW2 a -> begin
-    let r_grad = get_r_grad r in
-    let dims = Values.dim r_grad in
-    let a_grad = get_grad a.grad dims in
+    let r_grad = get_grad r in
     let coef = Values.create (Values.dim a.vals) 2. in
-    a.grad <- GRAD (Values.add a_grad (Values.mul (Values.mul coef a.vals) r_grad));
+    a.grad <- GRAD (Values.mul (Values.mul coef a.vals) r_grad);
+    accumulate_gradient a (Values.dim r_grad); 
   end
   | _ -> raise TypeException
 
 let log_backward r =
   match r.op with
   | LOG a -> begin
-    let r_grad = get_r_grad r in
-    let dims = Values.dim r_grad in
-    let a_grad = get_grad a.grad dims in
-    a.grad <- GRAD (Values.add a_grad (Values.mul (Values.reciprocal a.vals) r_grad));
+    let r_grad = get_grad r in
+    a.grad <- GRAD (Values.mul (Values.reciprocal a.vals) r_grad);
+    accumulate_gradient a (Values.dim r_grad); 
   end
   | _ -> raise TypeException
 
 let sqrt_backward r = 
   match r.op with
   | SQRT a -> begin
-    let r_grad = get_r_grad r in
-    let dims = Values.dim r_grad in
-    let a_grad = get_grad a.grad dims in
+    let r_grad = get_grad r in
     let coef = Values.create (Values.dim a.vals) 0.5 in
-    a.grad <- GRAD (Values.add a_grad (Values.mul (Values.mul coef (Values.reciprocal (Values.sqrt a.vals))) r_grad));
+    a.grad <- GRAD (Values.mul (Values.mul coef (Values.reciprocal (Values.sqrt a.vals))) r_grad);
+    accumulate_gradient a (Values.dim r_grad); 
   end
   | _ -> raise TypeException
 
 let matmul_backward r = 
   match r.op with 
   | MATMUL (a, b) -> begin 
-    let r_grad = get_r_grad r in
+    let r_grad = get_grad r in
     let (n, p), (_, m) = Values.dim a.vals, Values.dim b.vals in 
-    let a_grad = get_grad a.grad (n, p) in
-    let b_grad = get_grad b.grad (p, m) in
-    a.grad <- GRAD (Values.add a_grad (Values.matmul ~trans_b:112 r_grad b.vals));
-    b.grad <- GRAD (Values.add b_grad (Values.matmul ~trans_a:112 a.vals r_grad));
+    a.grad <- GRAD (Values.matmul ~trans_b:112 r_grad b.vals);
+    accumulate_gradient a (n, p); 
+    b.grad <- GRAD (Values.matmul ~trans_a:112 a.vals r_grad);
+    accumulate_gradient b (p, m); 
   end
   | _ -> raise TypeException
 
 let sum_backward r = 
   match r.op with
   | SUM a -> begin
-    let a_grad = get_grad a.grad (Values.dim a.vals) in
-    let r_grad = get_r_grad r in
-    a.grad <- GRAD (Values.add a_grad (Values.create (Values.dim a.vals) r_grad.{0, 0}))
+    let r_grad = get_grad r in
+    a.grad <- GRAD (Values.create (Values.dim a.vals) r_grad.{0, 0});
+    accumulate_gradient a (Values.dim a.vals); 
   end
   | _ -> raise TypeException
 
 let relu_backward r = 
   match r.op with
   | RELU a -> begin
-    let r_grad = get_r_grad r in
-    let a_grad = get_grad a.grad (Values.dim a.vals) in
+    let r_grad = get_grad r in
     a.grad <- GRAD 
-    (Values.add a_grad 
     (Values.mul r_grad 
       (Values.div 
         (Values.add a.vals (Values.abs a.vals)) 
-        (Values.mul a.vals (Values.create (Values.dim a.vals) 2.0))))
-    )
+    (Values.mul a.vals (Values.create (Values.dim a.vals) 2.0))));
+    accumulate_gradient a (Values.dim a.vals);
   end
   | _ -> raise TypeException
 
 let sigmoid_backward r =
   match r.op with
   | SIGMOID a -> begin 
-    let r_grad = get_r_grad r in
-    let dims = Values.dim r_grad in
-    let a_grad = get_grad a.grad dims in
-    a.grad <- GRAD (Values.add a_grad (Values.mul r_grad (Values.mul r.vals (Values.sub (Values.ones dims) r.vals))));
+    let r_grad = get_grad r in
+    let dims = Values.dim r.vals in
+    a.grad <- GRAD (Values.mul r_grad (Values.mul r.vals (Values.sub (Values.ones dims) r.vals)));
+    accumulate_gradient a dims;
   end
   | _ -> raise TypeException
 

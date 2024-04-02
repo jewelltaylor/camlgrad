@@ -18,6 +18,7 @@ type tensor = {
   tid : int;
   mutable vals : values;
   mutable grad : gradient;
+  mutable acc_grad : gradient;
   op : operator;
 } and operator = 
   | ADD of tensor * tensor 

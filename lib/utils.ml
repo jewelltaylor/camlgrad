@@ -9,7 +9,7 @@ let range start stop =
    else start :: (rangeHelper (start+1) stop) 
  in rangeHelper start stop
 
-let random_int = 
-  let bound = 1073741823 in
+let random_int () = 
+  let bound = 10000000 in
   Random.int bound 
 
