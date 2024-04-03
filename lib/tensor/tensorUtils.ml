@@ -1,5 +1,8 @@
 open Types
-open Values
+
+let random_int () = 
+  let bound = 10000000 in
+  Random.int bound 
 
 let get_grad_and_init_to_zero_if_none curr_grad dims =
   match curr_grad with

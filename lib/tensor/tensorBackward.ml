@@ -1,5 +1,4 @@
 open Types
-open Values
 open TensorUtils
 open TensorGraph
 

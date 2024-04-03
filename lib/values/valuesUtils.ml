@@ -9,10 +9,6 @@ let range start stop =
    else start :: (rangeHelper (start+1) stop) 
  in rangeHelper start stop
 
-let random_int () = 
-  let bound = 10000000 in
-  Random.int bound 
-
 let dims a = (Array2.dim1 a, Array2.dim2 a)
 
 let print_row a i =

@@ -1,6 +1,6 @@
 open Bigarray
 open Types 
-open Values
+open TensorUtils
 
 let add a b =
   let tid = random_int () in
