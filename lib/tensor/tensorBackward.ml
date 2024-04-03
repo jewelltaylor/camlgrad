@@ -141,67 +141,39 @@ let sigmoid_backward r =
   end
   | _ -> raise TypeException
 
-let backward r = 
-  if (Values.dim r.vals <> (1, 1)) then raise SizeException;
-  r.grad <- GRAD (Values.ones (1, 1));
-  let rec backward_helper r =
+let reverse_topological_sort r f = 
+  let rec reverse_topological_sort_helper r =
     match r.op with
-    | ADD (a, b) -> begin 
-      add_backward r;
-      backward_helper a;
-      backward_helper b;
+    | ADD (a, b) |  MUL (a, b) | SUB (a, b) | DIV (a, b) | MATMUL (a, b) -> begin
+      f r;
+      reverse_topological_sort_helper a;
+      reverse_topological_sort_helper b;
     end
-    | MUL (a, b) -> begin 
-      mul_backward r;
-      backward_helper a;
-      backward_helper b;
-    end
-    | SUB (a, b) -> begin 
-      sub_backward r;
-      backward_helper a;
-      backward_helper b;
-    end
-    | DIV (a, b) -> begin
-      div_backward r;
-      backward_helper a;
-      backward_helper b;
-    end
-    | NEG a -> begin 
-      neg_backward r;
-      backward_helper a;
-    end
-    | POW2 a -> begin 
-      pow_backward r;
-      backward_helper a;
-    end
-    | EXP a -> begin 
-      exp_backward r;
-      backward_helper a;
-    end
-    | LOG a -> begin
-      log_backward r;
-      backward_helper a;
-    end
-    | SQRT a -> begin 
-      sqrt_backward r;
-      backward_helper a;
-    end
-    | SUM a -> begin
-      sum_backward r;
-      backward_helper a;
-    end
-    | MATMUL (a, b) -> begin 
-      matmul_backward r;
-      backward_helper a;
-      backward_helper b;
-    end
-    | RELU a -> begin
-      relu_backward r;
-      backward_helper a;
-    end
-    | SIGMOID a -> begin
-      sigmoid_backward r;
-      backward_helper a;
+    | NEG a | POW2 a | EXP a | LOG a | SQRT a | SUM a | RELU a | SIGMOID a -> begin
+      f r;
+      reverse_topological_sort_helper a;
     end
     | CREATE -> ()  
-  in backward_helper r;;
+  in reverse_topological_sort_helper r;;
+
+let backward_function_map r = 
+  match r.op with
+  | ADD (_, _) -> add_backward r;
+  | MUL (_, _) -> mul_backward r;
+  | SUB (_, _) -> sub_backward r;
+  | DIV (_, _) -> div_backward r;
+  | NEG _ -> neg_backward r;
+  | POW2 _ -> pow_backward r;
+  | EXP _ -> exp_backward r;
+  | LOG _ -> log_backward r;
+  | SQRT _ -> sqrt_backward r;
+  | SUM _ -> sum_backward r;
+  | MATMUL (_, _) -> matmul_backward r;
+  | RELU _ -> relu_backward r;
+  | SIGMOID _ -> sigmoid_backward r;
+  | CREATE -> ()  
+
+let backward r =
+  if (Values.dim r.vals <> (1, 1)) then raise SizeException;
+  r.grad <- GRAD (Values.ones (1, 1));
+  reverse_topological_sort r backward_function_map
