@@ -45,3 +45,9 @@ let op_constructor_to_string op =
   | RELU _ -> "RELU"
   | SIGMOID _ -> "SIGMOID"
   | CREATE -> "CREATE"
+
+let tensor_to_vertex_string a = Printf.sprintf "%s\n" (string_of_int a.tid) 
+let create_op_to_vertex_string op = Printf.sprintf "%s\n" (op_constructor_to_string op)
+let urnary_op_to_vertex_string op a_id = Printf.sprintf "%s %s\n" (op_constructor_to_string op) (string_of_int a_id)
+let binary_op_to_vertex_string op a_id b_id = 
+  Printf.sprintf "%s %s %s\n" (op_constructor_to_string op) (string_of_int a_id) (string_of_int b_id)

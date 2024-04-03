@@ -1,5 +1,6 @@
 open Camlgrad.Types
 open TensorUtils
+open TensorGraph
 
 let accumulate_gradient a dims = 
   let acc_grad = get_grad_and_init_to_zero_if_none a.acc_grad dims in
@@ -141,20 +142,6 @@ let sigmoid_backward r =
   end
   | _ -> raise TypeException
 
-let reverse_topological_sort r f = 
-  let rec reverse_topological_sort_helper r =
-    match r.op with
-    | ADD (a, b) |  MUL (a, b) | SUB (a, b) | DIV (a, b) | MATMUL (a, b) -> begin
-      f r;
-      reverse_topological_sort_helper a;
-      reverse_topological_sort_helper b;
-    end
-    | NEG a | POW2 a | EXP a | LOG a | SQRT a | SUM a | RELU a | SIGMOID a -> begin
-      f r;
-      reverse_topological_sort_helper a;
-    end
-    | CREATE -> ()  
-  in reverse_topological_sort_helper r;;
 
 let backward_function_map r = 
   match r.op with
