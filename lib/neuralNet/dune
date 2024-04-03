@@ -1,4 +1,0 @@
-(library
- (name neuralNet)
- (public_name camlgrad.neuralNet)
- (libraries camlgrad camlgrad.tensor))

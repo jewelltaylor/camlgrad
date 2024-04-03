@@ -1,5 +1,5 @@
 open Bigarray
-open Camlgrad.Types
+open Types
 
 let from_array (arr : standard_array) = Array2.of_array Float32 c_layout arr 
 

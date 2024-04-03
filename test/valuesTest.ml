@@ -1,16 +1,4 @@
-open Alcotest
-open Camlgrad
-
-exception SizeException
-
-let check_equal a b =
-  if (Values.dim a <> Values.dim b) then raise SizeException;
-  let (d1, d2) = Values.dim a in
-  List.iter (fun i -> 
-    List.iter (fun j -> 
-      let epsilon_float = 0.0001 in 
-      check (float epsilon_float) "Equal Float" a.{i, j} b.{i, j}
-  )(Utils.range 0 d2)) (Utils.range 0 d1)
+open TestUtils
 
 let test_add () =
   let a = Values.create (5, 6) 15.0 in

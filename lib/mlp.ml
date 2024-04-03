@@ -1,4 +1,4 @@
-open Camlgrad.Types
+open Types
 
 let get_mlp_layer ?(activation = Tensor.sigmoid) dims =
   let (_, d2) = dims in

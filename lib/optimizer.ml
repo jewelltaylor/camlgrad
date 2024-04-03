@@ -1,4 +1,5 @@
-open Camlgrad.Types
+open Tensor
+open Types
 
 let apply_update mlp_layer learning_rate = 
   let weight_acc_grad = mlp_layer.weights.acc_grad in 

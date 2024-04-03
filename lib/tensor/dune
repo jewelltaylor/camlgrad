@@ -1,5 +1,5 @@
 (library 
   (name tensor)
   (public_name camlgrad.tensor) 
-  (libraries ocamlgraph camlgrad camlgrad.values)
+  (libraries ocamlgraph camlgrad.values)
  )

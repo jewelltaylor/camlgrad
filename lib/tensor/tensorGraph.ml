@@ -1,4 +1,4 @@
-open Camlgrad.Types
+open Types
 open TensorUtils
 
 module G = Graph.Imperative.Digraph.ConcreteBidirectional(struct

@@ -2,7 +2,7 @@
  (name camlgrad)
  (public_name camlgrad)
  (modules :standard \)
- (libraries ctypes-foreign)
+ (libraries ctypes-foreign camlgrad.tensor)
  (flags (:standard -cclib -lcblas)
         (:standard
          -ccopt -framework

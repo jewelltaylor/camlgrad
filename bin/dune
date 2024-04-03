@@ -1,4 +1,4 @@
 (executable
  (public_name camlgrad)
  (name main)
- (libraries camlgrad camlgrad.tensor camlgrad.values camlgrad.neuralNet))
+ (libraries camlgrad camlgrad.tensor camlgrad.values ))

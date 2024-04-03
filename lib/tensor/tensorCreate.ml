@@ -1,5 +1,5 @@
-open Camlgrad.Types
-open Camlgrad.Utils
+open Types
+open Values
 
 let create (dims: dimensions) (value : float) =
   let tid = random_int () in 

@@ -1,8 +1,8 @@
 open Bigarray
 open Ctypes
-open Camlgrad.Vforce
-open Camlgrad.Cblas
-open Camlgrad.Types
+open Vforce
+open Cblas
+open Types
 
 let unary_op f a = 
     let (dim1, dim2) = (Array2.dim1 a, Array2.dim2 a) in

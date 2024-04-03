@@ -1,4 +1,5 @@
-open Camlgrad.Types
+open Types
+open Values
 
 let get_grad_and_init_to_zero_if_none curr_grad dims =
   match curr_grad with

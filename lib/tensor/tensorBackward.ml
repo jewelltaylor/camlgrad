@@ -1,4 +1,5 @@
-open Camlgrad.Types
+open Types
+open Values
 open TensorUtils
 open TensorGraph
 
