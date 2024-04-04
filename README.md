@@ -24,7 +24,7 @@ opam install ocamlgraph ctypes-foreign alcotest
 ```
 
 ## Usage
-camlgrad makes it easy to define an MLP and perform forward and backward passes. As illustrated in the code snippet below, we can simply: 
+**camlgrad** makes it easy to define an MLP and perform forward and backward passes. As illustrated in the code snippet below, we can simply: 
 - Define an MLP containing a single layer with sigmoid activation
 - Define arbitrary input and target
 - Perform a forward pass on the MLP model
