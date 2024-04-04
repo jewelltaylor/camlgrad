@@ -15,7 +15,7 @@ jobs:
         uses: ocaml/setup-ocaml@v2
         with:
           ocaml-compiler: "5.1" 
-      - run: opam install . --deps-only --with-test
+      - run: opam install ctypes-foreign alcotest ocamlgraph 
       - run: opam exec -- dune build 
       - run: opam exec -- dune test 
       - run: echo "🍏 This job's status is ${{ job.status }}."
