@@ -7,7 +7,7 @@
 <img src="https://github.com/jewelltaylor/camlgrad/actions/workflows/unit-test.yml/badge.svg" />
 </p>
 
-Inspired by [micrograd](https://github.com/karpathy/micrograd) and [tinygrad](https://github.com/tinygrad/tinygrad), camlgrad is a toy autograd engine in OCaml from scratch using an Apple Accelerate backend for vectorized computation. **camlgrad** offers a `Tensor` module with a wide variety of unary operations and binary operations that can be composed in arbitrary ways to define computation graphs that admit forward and backward passes on scalar valued functions. Using the `Tensor` module, several other modules are defined for calculating losses (`Loss`), defining multi-layer perceptrons (`Mlp`) and performing gradient descent (`Optimizer`).
+Inspired by [micrograd](https://github.com/karpathy/micrograd) and [tinygrad](https://github.com/tinygrad/tinygrad), **camlgrad** is a toy autograd engine in OCaml from scratch using an Apple Accelerate backend for vectorized computation. **camlgrad** offers a `Tensor` module with a wide variety of unary operations and binary operations that can be composed in arbitrary ways to define computation graphs that admit forward and backward passes on scalar valued functions. Using the `Tensor` module, several other modules are defined for calculating losses (`Loss`), defining multi-layer perceptrons (`Mlp`) and performing gradient descent (`Optimizer`).
 
 ## Installation
 Install ocaml compiler and package manager (opam) along with some useful platform tools:
