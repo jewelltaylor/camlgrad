@@ -1,7 +1,7 @@
 open Values
 
-exception TypeException
-exception SizeException
+exception InvalidArgumentException of string
+exception SizeException of string
 
 type gradient = 
   | GRAD of values

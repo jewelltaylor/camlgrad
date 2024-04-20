@@ -15,7 +15,7 @@ let add_backward r =
     b.grad <- GRAD r_grad; 
     accumulate_gradient b (Values.dim r_grad);
   end
-  | _ -> raise TypeException
+  | _ -> raise (InvalidArgumentException "Cannot call add_backward on tensor not created from add op") 
 
 let mul_backward r = 
   match r.op with
@@ -26,7 +26,7 @@ let mul_backward r =
     b.grad <- GRAD (Values.mul a.vals r_grad); 
     accumulate_gradient b (Values.dim r_grad); 
   end
-  | _ -> raise TypeException
+  | _ -> raise (InvalidArgumentException "Cannot call mul_backward on tensor not created from mul op") 
 
 let div_backward r = 
   match r.op with
@@ -37,7 +37,7 @@ let div_backward r =
     b.grad <- GRAD (Values.mul r_grad (Values.neg (Values.div a.vals (Values.pow2 b.vals)))); 
     accumulate_gradient b (Values.dim r_grad); 
   end
-  | _ -> raise TypeException
+  | _ -> raise (InvalidArgumentException "Cannot call div_backward on tensor not created from div op") 
 
 let neg_backward r = 
   match r.op with
@@ -47,7 +47,7 @@ let neg_backward r =
     a.grad <- GRAD (Values.mul b r_grad);
     accumulate_gradient a (Values.dim r_grad); 
   end
-  | _ -> raise TypeException
+  | _ -> raise (InvalidArgumentException "Cannot call neg_backward on tensor not created from neg op") 
 
 let sub_backward r = 
   match r.op with
@@ -58,7 +58,7 @@ let sub_backward r =
     b.grad <- GRAD (Values.neg r_grad);
     accumulate_gradient b (Values.dim r_grad); 
   end
-  | _ -> raise TypeException
+  | _ -> raise (InvalidArgumentException "Cannot call sub_backward on tensor not created from sub op") 
 
 let exp_backward r =
   match r.op with
@@ -67,7 +67,7 @@ let exp_backward r =
     a.grad <- GRAD (Values.mul r.vals r_grad);
     accumulate_gradient a (Values.dim r_grad); 
   end
-  | _ -> raise TypeException
+  | _ -> raise (InvalidArgumentException "Cannot call exp_backward on tensor not created from exp op") 
 
 let pow_backward r =
   match r.op with
@@ -77,7 +77,7 @@ let pow_backward r =
     a.grad <- GRAD (Values.mul (Values.mul coef a.vals) r_grad);
     accumulate_gradient a (Values.dim r_grad); 
   end
-  | _ -> raise TypeException
+  | _ -> raise (InvalidArgumentException "Cannot call pow_backward on tensor not created from pow op") 
 
 let log_backward r =
   match r.op with
@@ -86,7 +86,7 @@ let log_backward r =
     a.grad <- GRAD (Values.mul (Values.reciprocal a.vals) r_grad);
     accumulate_gradient a (Values.dim r_grad); 
   end
-  | _ -> raise TypeException
+  | _ -> raise (InvalidArgumentException "Cannot call log_backward on tensor not created from log op") 
 
 let sqrt_backward r = 
   match r.op with
@@ -96,7 +96,7 @@ let sqrt_backward r =
     a.grad <- GRAD (Values.mul (Values.mul coef (Values.reciprocal (Values.sqrt a.vals))) r_grad);
     accumulate_gradient a (Values.dim r_grad); 
   end
-  | _ -> raise TypeException
+  | _ -> raise (InvalidArgumentException "Cannot call sqrt_backward on tensor not created from sqrt op") 
 
 let matmul_backward r = 
   match r.op with 
@@ -108,7 +108,7 @@ let matmul_backward r =
     b.grad <- GRAD (Values.matmul ~trans_a:112 a.vals r_grad);
     accumulate_gradient b (p, m); 
   end
-  | _ -> raise TypeException
+  | _ -> raise (InvalidArgumentException "Cannot call matmul_backward on tensor not created from matmul op") 
 
 let sum_backward r = 
   match r.op with
@@ -117,7 +117,7 @@ let sum_backward r =
     a.grad <- GRAD (Values.create (Values.dim a.vals) r_grad.{0, 0});
     accumulate_gradient a (Values.dim a.vals); 
   end
-  | _ -> raise TypeException
+  | _ -> raise (InvalidArgumentException "Cannot call sum_backward on tensor not created from sum op") 
 
 let relu_backward r = 
   match r.op with
@@ -130,7 +130,7 @@ let relu_backward r =
     (Values.mul a.vals (Values.create (Values.dim a.vals) 2.0))));
     accumulate_gradient a (Values.dim a.vals);
   end
-  | _ -> raise TypeException
+  | _ -> raise (InvalidArgumentException "Cannot call relu_backward on tensor not created from relu op") 
 
 let sigmoid_backward r =
   match r.op with
@@ -140,8 +140,7 @@ let sigmoid_backward r =
     a.grad <- GRAD (Values.mul r_grad (Values.mul r.vals (Values.sub (Values.ones dims) r.vals)));
     accumulate_gradient a dims;
   end
-  | _ -> raise TypeException
-
+  | _ -> raise (InvalidArgumentException "Cannot call sigmoid_backward on tensor not created from sigmoid op") 
 
 let backward_function_map r = 
   match r.op with
@@ -161,6 +160,6 @@ let backward_function_map r =
   | CREATE -> ()  
 
 let backward r =
-  if (Values.dim r.vals <> (1, 1)) then raise SizeException;
+  if (Values.dim r.vals <> (1, 1)) then raise (SizeException "Tensor must have dim (1, 1)");
   r.grad <- GRAD (Values.ones (1, 1));
   reverse_topological_sort r backward_function_map

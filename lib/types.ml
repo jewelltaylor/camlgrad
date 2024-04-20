@@ -1,5 +1,7 @@
 open Tensor
 
+exception InvalidArgumentException of string
+
 type mlp_layer = {
   weights : tensor;
   bias : tensor;

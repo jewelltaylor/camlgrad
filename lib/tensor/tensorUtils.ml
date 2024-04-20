@@ -12,12 +12,12 @@ let get_grad_and_init_to_zero_if_none curr_grad dims =
 let get_grad tnsr =
   match tnsr.grad with
   | GRAD grad -> grad
-  | _ ->  raise TypeException
+  | _ ->  raise (InvalidArgumentException "Tensor grad is None") 
 
 let get_acc_grad tnsr =
   match tnsr.acc_grad with
   | GRAD grad -> grad
-  | _ ->  raise TypeException
+  | _ ->  raise (InvalidArgumentException "Tensor accumulated grad is None") 
 
 let printVals (tnsr: tensor) =
   let adim1, adim2 = Values.dim tnsr.vals in

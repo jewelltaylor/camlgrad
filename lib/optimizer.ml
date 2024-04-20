@@ -11,7 +11,7 @@ let apply_update mlp_layer learning_rate =
     mlp_layer.weights.vals <- Values.sub mlp_layer.weights.vals (Values.mul w_per_param_lr w_grad);
     mlp_layer.bias.vals <- Values.sub mlp_layer.bias.vals (Values.mul b_per_param_lr b_grad);
   end
-  | _ -> raise TypeException 
+  | _ -> raise (InvalidArgumentException "Accumulated grad of weight and bias cannot be None")
 
 let update mlp learning_rate = 
   Array.iter (
@@ -28,7 +28,7 @@ let zero_grad_mlp_layer mlp_layer =
     mlp_layer.bias.grad <- GRAD (Values.mul b_grad (Values.zeros (Values.dim b_grad)));
     mlp_layer.bias.acc_grad <- GRAD (Values.mul b_grad (Values.zeros (Values.dim b_grad)));
   end
-  | _ -> raise TypeException 
+  | _ -> raise (InvalidArgumentException "grad of weight and bias cannot be None")
 
 let zero_grad_mlp mlp =
   Array.iter (
