@@ -1,7 +1,7 @@
 open Bigarray
 
-exception TypeException
-exception SizeException
+exception InvalidArgumentException of string
+exception SizeException of string
 
 type standard_array = float array array 
 

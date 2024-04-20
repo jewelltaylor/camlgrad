@@ -1,8 +1,8 @@
 open Bigarray
-exception InvalidArgumentException
+open Types
 
 let range start stop =
- if start >= stop then raise InvalidArgumentException;
+ if start >= stop then raise (InvalidArgumentException "start must be less or equal to stop");
 
  let rec rangeHelper start stop =
    if start == stop then []
