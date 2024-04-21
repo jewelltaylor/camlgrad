@@ -1,4 +1,12 @@
-open Types
+open Tensor
+
+type dimensions = int * int
+type mlp_layer = {
+  weights : tensor;
+  bias : tensor;
+  activation: tensor -> tensor 
+}
+type mlp = mlp_layer array
 
 let get_mlp_layer ?(activation = Tensor.sigmoid) dims =
   let (_, d2) = dims in

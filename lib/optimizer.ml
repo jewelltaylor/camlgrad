@@ -1,5 +1,6 @@
 open Tensor
 open Types
+open Mlp 
 
 let apply_update mlp_layer learning_rate = 
   let weight_acc_grad = mlp_layer.weights.acc_grad in 
