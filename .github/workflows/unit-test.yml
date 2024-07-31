@@ -5,6 +5,11 @@ on:
     branches:
       - main
     workflow_dispatch:
+      inputs:
+        branch:
+          description: 'Branch to run the workflow on'
+          required: true
+          default: 'main'
 
 jobs:
   build:
@@ -24,4 +29,3 @@ jobs:
       - run: opam exec -- dune build 
       - run: opam exec -- dune test 
       - run: echo "🍏 This job's status is ${{ job.status }}."
-
